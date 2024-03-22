@@ -9,7 +9,7 @@ export const types = [
     id: 2,
     name: 'gray',
     value:
-      'bg-white hover:bg-zinc-200 border-t-4 border-x-1 border-gray-100 active:bg-[#e0f7db] hover:border-transparent shadow-bottom text-black font-meidum rounded-2xl md:w-20 md:h-20 w-12 h-12 text-2xl md:text-3xl md:m-1 m-0.5',
+      'bg-white hover:bg-zinc-200 border-t-4 border-x-1 border-gray-100 active:bg-[#e0f7db] hover:border-transparent shadow-bottom text-[#7e8188] hover:text-black font-meidum rounded-2xl md:w-20 md:h-20 w-12 h-12 text-2xl md:text-3xl md:m-1 m-0.5',
   },
   {
     id: 3,
