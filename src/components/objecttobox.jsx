@@ -10,7 +10,7 @@ export default function ObjectToBox({ objectArray, handleFunction }) {
   }
 
   return (
-    <div className='flex items-center justify-center'>
+    <div className='flex flex-wrap items-center justify-center'>
       {objectArray.map((object, index) => (
         <button
           key={index}

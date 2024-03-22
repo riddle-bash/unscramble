@@ -8,15 +8,17 @@ import AnswerToBox from '@/components/answertobox'
 import Modal from '@/components/wordmodal'
 import ObjectToBox from '@/components/objecttobox'
 import MessageModal from '@/components/messagemodal'
+import HelpBar from '@/components/helpbar'
 
 export default function App() {
   /* DECLARE STATE */
   const [originWord, setOriginWord] = useState('')
   const [scrambledWord, setScrambledWord] = useState([])
-  const [object, setObject] = useState([])
+  const [scrambledObject, setScrambledObject] = useState([])
   const [chosenWord, setChosenWord] = useState([])
   const [revealedWord, setRevealedWord] = useState([])
   const [hintLeft, setHintLeft] = useState(3)
+  const [hintObject, setHintObject] = useState([])
   const [progress, setProgress] = useState(1)
   const [isSubmitted, setSubmitted] = useState(false)
   const [isOpenModal, setOpenModal] = useState(false)
@@ -38,7 +40,9 @@ export default function App() {
   }, [])
 
   /* Todo: Check if re-render work */
-  let immuScramWord = object.filter((o) => !o.isPicked).map((o) => o.value)
+  let immuScramWord = scrambledObject
+    .filter((o) => !o.isPicked)
+    .map((o) => o.value)
   let immuIsSubmitted = false
 
   // Handle keydown
@@ -62,14 +66,14 @@ export default function App() {
       setChosenWord((chosenWord) => [...chosenWord, key])
       setScrambledWord(immuScramWord)
 
-      let tmpObject = object
+      let tmpObject = scrambledObject
       for (let i = 0; i < tmpObject.length; i++) {
         if (tmpObject[i].value === key && !tmpObject[i].isPicked)
           objectIndex = i
       }
       tmpObject[objectIndex].isPicked = true
       tmpObject[objectIndex].pickedPosition = chosenWord.length
-      setObject(tmpObject)
+      setScrambledObject(tmpObject)
     }
     // Handle if player try to next
     if (key === 'Enter' && immuScramWord.length === 0) {
@@ -97,6 +101,7 @@ export default function App() {
     setChosenWord([])
     setRevealedWord([])
     setHintLeft(3)
+    setHintObject(doHintObject())
     setSubmitted(false)
   }
 
@@ -105,7 +110,7 @@ export default function App() {
     let words = wordList.map((w) => w.word)
     setOriginWord(words[randomIndex])
     setScrambledWord(doScramble(words[randomIndex]))
-    setObject(doScrambleObject(words[randomIndex]))
+    setScrambledObject(doScrambleObject(words[randomIndex]))
   }
 
   const doScrambleObject = (input) => {
@@ -121,6 +126,15 @@ export default function App() {
     return array
   }
 
+  const doHintObject = () => {
+    const tmpHintObject = [
+      { isAvailable: true },
+      { isAvailable: true },
+      { isAvailable: true },
+    ]
+    return tmpHintObject
+  }
+
   const doScramble = (input) => {
     const shuffle = input.split('').sort(() => Math.random() - 0.5)
     return shuffle
@@ -130,20 +144,21 @@ export default function App() {
   const handlePick = (char, index) => {
     setChosenWord([...chosenWord, char])
     setScrambledWord(scrambledWord.filter((c, i) => i !== index))
-    let tmpObject = object
+    let tmpObject = scrambledObject
     tmpObject[index].isPicked = true
-    setObject(tmpObject)
+    tmpObject[index].pickedPosition = chosenWord.length
+    setScrambledObject(tmpObject)
   }
 
   const handleUnpick = (char, index) => {
-    let tmpObject = object
+    let tmpObject = scrambledObject
     let objectIndex = 0
     for (let i = 0; i < tmpObject.length; i++) {
       if (tmpObject[i].pickedPosition === chosenWord.length - 1) objectIndex = i
     }
     tmpObject[objectIndex].isPicked = false
     tmpObject[objectIndex].pickedPosition = -1
-    setObject(tmpObject)
+    setScrambledObject(tmpObject)
     setScrambledWord([...scrambledWord, char])
     setChosenWord(chosenWord.filter((c, i) => i !== index))
     immuScramWord = scrambledWord
@@ -160,17 +175,27 @@ export default function App() {
   }
 
   const handleHint = () => {
-    setHintLeft(hintLeft - 1)
     let index = chosenWord.length
     if (immuScramWord.includes(originWord[index])) {
+      // Process hint
+      setHintLeft(hintLeft - 1)
+      let tmpHint = hintObject
+      tmpHint[hintLeft - 1].isAvailable = false
+      setHintObject(tmpHint)
+
+      // Process chosen word
       setChosenWord([...chosenWord, originWord[index]])
+
+      // Process scrambled word
       let indexScramble = -1
       for (let i = 0; i < scrambledWord.length; i++) {
         if (scrambledWord[i] === originWord[index]) indexScramble = i
       }
       setScrambledWord(scrambledWord.filter((char, i) => i !== indexScramble))
+
+      // Process scrambled object
       immuScramWord = scrambledWord
-      let tmpObject = object
+      let tmpObject = scrambledObject
       let objectIndex = 0
       for (let i = 0; i < tmpObject.length; i++) {
         if (tmpObject[i].value === originWord[index] && !tmpObject[i].isPicked)
@@ -178,8 +203,10 @@ export default function App() {
       }
       tmpObject[objectIndex].isPicked = true
       tmpObject[objectIndex].pickedPosition = chosenWord.length
-      setObject(tmpObject)
-    } else setOpenMessage(true)
+      setScrambledObject(tmpObject)
+    } else {
+      setOpenMessage(true)
+    }
   }
 
   const handleCloseModal = () => {
@@ -217,24 +244,26 @@ export default function App() {
     // Root div
     <div className='relative bg-white w-full 2xl:w-7/12 mx-auto min-h-screen items-center justify-center'>
       {/* Header */}
-      <div className='absolute top-2 right-0 left-0 px-8 items-center justify-center'>
+      <div className='absolute top-2 right-0 left-0 px-4 md:pr-8 items-center justify-center'>
         <Progression current={progress} totalProgress={wordList.length} />
       </div>
 
       {/* Body */}
-      <div className='absolute top-12 lg:top-14 bottom-20 md:left-24 md:right-24 items-center justify-center'>
+      <div className='absolute top-12 lg:top-14 bottom-20 left-2 right-2 lg:left-24 lg:right-24 items-center justify-center'>
         {/* Question */}
         <div className='relative ml-10 pl-100 md:pt-12 lg:pb-8 lg:ml-32'>
           <Question progress={progress} />
         </div>
 
         {/* Definition */}
-        <div className='relative py-6 px-12 bg-gray-100 rounded-2xl border border-gray-200'>
+        <div className='relative py-4 md:py-6 px-4 md:px-12 bg-[#eeeff3] rounded-2xl border border-gray-200'>
           {/* Todo: Seperate Class */}
-          <div className='md:flex md:items-start relative'>
-            <img className='w-24 h-24 rounded-xl' src={wSrc} alt={wSrc}></img>
+          <div className='md:flex md:justify-center'>
+            <div className='flex left-0 right-0 justify-center mb-4 md:mb-0'>
+              <img className='w-24 h-24 rounded-xl' src={wSrc} alt={wSrc}></img>
+            </div>
             <div className='ml-3'>
-              <p className='text-left text-xl md:ml-4'>
+              <p className='text-left text-md md:text-xl md:ml-4'>
                 <span>{wDefEn}</span>
               </p>
               <p className='text-left text-gray-500 text-md md:ml-4'>
@@ -245,9 +274,9 @@ export default function App() {
         </div>
 
         {/* Gameplay */}
-        <div className='relative lg:mt-10 mr-10 ml-10'>
+        <div className='relative mt-2 lg:mt-10 md:mt-4 mr-8 ml-8'>
           {/* Answer */}
-          <div className='absolute top-0 left-20 right-20'>
+          <div className='absolute top-0 left-4 right-4 md:left-20 md:right-20'>
             <AnswerToBox
               charArray={chosenWord}
               originWord={originWord}
@@ -257,7 +286,7 @@ export default function App() {
           </div>
 
           {/* Origin Word */}
-          <div className='absolute top-16 left-20 right-20'>
+          <div className='absolute top-20 md:top-32 lg:top-16 left-4 right-4 md:left-20 md:right-20'>
             <WordToBox
               charArray={revealedWord}
               isDisable={true}
@@ -266,26 +295,28 @@ export default function App() {
           </div>
 
           {/* Random Letter */}
-          <div className='absolute pt-8 border-t-2 border-gray-200 top-32 lg:top-40 left-10 right-10'>
-            <ObjectToBox objectArray={object} handleFunction={handlePick} />
+          <div className='absolute pt-2 md:pt-8 border-t-2 border-gray-200 top-36 md:top-48 left-4 right-4 md:left-10 md:right-10'>
+            <ObjectToBox
+              objectArray={scrambledObject}
+              handleFunction={handlePick}
+            />
           </div>
 
-          {/* Undo Button */}
-          <div className='absolute right-0 top-5'>
-            {chosenWord.length !== 0 && (
-              <button
-                disabled={isSubmitted}
-                onClick={() =>
-                  handleUnpick(
-                    chosenWord[chosenWord.length - 1],
-                    chosenWord.length - 1
-                  )
-                }
-                className='bg-gray-100 hover:bg-gray-300 text-gray-400 hover:text-black w-8 h-8 text-lg text-center font-bold border border-gray-300 rounded-xl'
-              >
-                ↺
-              </button>
-            )}
+          {/* Help Bar */}
+          <div className='absolute right-0 top-28 md:top-36'>
+            <HelpBar
+              isSubmitted={isSubmitted}
+              canUndo={chosenWord.length !== 0}
+              handleUndo={() =>
+                handleUnpick(
+                  chosenWord[chosenWord.length - 1],
+                  chosenWord.length - 1
+                )
+              }
+              handleHint={handleHint}
+              hintObject={hintObject}
+              hintLeft={hintLeft}
+            />
           </div>
         </div>
       </div>
@@ -293,7 +324,7 @@ export default function App() {
       {/* Footer */}
       <div className='absolute bottom-1 lg:bottom-3 right-0 left-0 items-center justify-center'>
         {isSubmitted ? (
-          <div className='absolute bg-emerald-50 rounded-2xl bottom-8 lg:bottom-20 mx-4 left-0 right-0 p-4 animate-fly-in border border-gray-200 mb-2'>
+          <div className='absolute bg-[#e1eee7] rounded-2xl bottom-8 lg:bottom-20 mx-4 left-0 right-0 p-4 animate-fly-in border border-gray-200 mb-2'>
             <div className='flex items-end'>
               <p className='text-green-700 font-medium text-xl'>
                 {/* Capitalize first letter */}
@@ -303,16 +334,29 @@ export default function App() {
             </div>
             <p>{wDefEn}</p>
             <div className='flex items-end'>
-              <p className='text-gray-500 mr-1'>⭐Vietnamese:</p>
+              ⭐<i className='text-gray-500 mr-1'>Vietnamese:</i>
               <p>{wDefVi}</p>
             </div>
             <div className='absolute right-1 bottom-1'>
               {/* Open modal */}
               <button
                 onClick={handleOpenModal}
-                className='bg-black border text-white rounded-full w-6 h-6 text-sm'
+                className='bg-[#2e2e2e] text-white rounded-full w-7 h-7 text-sm'
               >
-                ↗
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth='1.5'
+                  stroke='currentColor'
+                  className='w-4 h-4 ml-1.5'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    d='m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25'
+                  />
+                </svg>
               </button>
             </div>
           </div>
@@ -320,12 +364,7 @@ export default function App() {
           <div className='absolute'></div>
         )}
 
-        <Navigation
-          disabled={checkLength}
-          handleNext={handleNext}
-          hanldeHint={handleHint}
-          hintLeft={hintLeft}
-        />
+        <Navigation disabled={checkLength} handleNext={handleNext} />
       </div>
       <Modal
         isOpen={isOpenModal}
