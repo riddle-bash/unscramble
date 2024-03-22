@@ -62,7 +62,7 @@ export default function HelpBar({
           <button
             key={index}
             onClick={() => handleHint(index)}
-            disabled={isSubmitted || hintLeft < 1}
+            disabled={isSubmitted || hintLeft < 1 || !hint.isAvailable}
             className='mx-1'
           >
             {hint.isAvailable ? (

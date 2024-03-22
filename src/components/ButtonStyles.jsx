@@ -15,7 +15,7 @@ export const types = [
     id: 3,
     name: 'normal',
     value:
-      'bg-white hover:bg-zinc-200 text-black active:bg-[#e0f7db] font-semibold px-1 py-1 md:py-2 md:px-4 border border-dashed border-gray-400 hover:border-transparent rounded-xl md:w-14 md:h-16 w-8 h-10 text-xl md:text-2xl m-0.5 md:m-1',
+      'bg-[#f7f7f7] hover:bg-zinc-200 text-black active:bg-[#e0f7db] font-semibold px-1 py-1 md:py-2 md:px-4 border border-dashed border-gray-400 hover:border-transparent rounded-xl md:w-14 md:h-16 w-8 h-10 text-xl md:text-2xl m-0.5 md:m-1',
   },
   {
     id: 4,
@@ -52,5 +52,11 @@ export const types = [
     name: 'full correct',
     value:
       'bg-white text-green-700 font-semibold px-1 py-1 md:py-2 md:px-4 border border-dashed border-gray-400  rounded-xl md:w-14 md:h-16 w-8 h-10 text-xl md:text-2xl m-0.5 md:m-1',
+  },
+  {
+    id: 10,
+    name: 'incorrect null',
+    value:
+      'bg-white text-black font-semibold px-1 py-1 md:py-2 md:px-4 border border-dashed border-gray-400  rounded-xl md:w-14 md:h-16 w-8 h-10 text-xl md:text-2xl m-0.5 md:m-1',
   },
 ]

@@ -1,20 +1,12 @@
-import { types } from './buttonstyle'
+import { types } from './ButtonStyles'
 
-export default function ScrambledToBox({
+export default function AnswerToBox({
   objectArray,
   handleFunction,
   originWord,
   isSubmitted,
-  handleCheckWord,
+  isAnswerCorrect,
 }) {
-  let checkWord = true
-  if (isSubmitted) {
-    for (let i = 0; i < objectArray.length; i++) {
-      if (objectArray[i].value !== originWord[i]) checkWord = false
-    }
-    handleCheckWord(checkWord)
-  }
-
   const insertStyle = (isPicked, char, index) => {
     if (!isPicked) {
       return types.filter((t) => t.name === 'normal null').map((t) => t.value)
@@ -22,7 +14,7 @@ export default function ScrambledToBox({
       if (!isSubmitted) {
         return types.filter((t) => t.name === 'normal').map((t) => t.value)
       } else {
-        if (checkWord) {
+        if (isAnswerCorrect) {
           return types
             .filter((t) => t.name === 'full correct')
             .map((t) => t.value)
@@ -32,7 +24,9 @@ export default function ScrambledToBox({
               .filter((t) => t.name === 'incorrect')
               .map((t) => t.value)
           else
-            return types.filter((t) => t.name === 'normal').map((t) => t.value)
+            return types
+              .filter((t) => t.name === 'incorrect null')
+              .map((t) => t.value)
         }
       }
     }
@@ -44,13 +38,13 @@ export default function ScrambledToBox({
         <button
           key={index}
           onClick={() => handleFunction(object.value, index)}
-          disabled={!object.isPicked}
+          disabled={!object.isPicked || isSubmitted}
           className={insertStyle(object.isPicked, object.value, index)}
         >
           {object.isPicked ? object.value.toUpperCase() : '?'}
         </button>
       ))}
-      {isSubmitted && checkWord && (
+      {isSubmitted && isAnswerCorrect && (
         <button
           disabled={true}
           className='bg-white border-2 border-gray-100 text-green-700 rounded-full shadow-bottom p-1 m-0.5 md:p-2 md:m-1'

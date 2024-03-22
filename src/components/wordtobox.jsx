@@ -1,4 +1,4 @@
-import { types } from './buttonstyle'
+import { types } from './ButtonStyles'
 
 export default function WordToBox({
   charArray,

@@ -1,14 +1,14 @@
-import { wordList } from '@/components/words'
-import Question from '@/components/question'
-import Progression from '@/components/progressbar'
-import Navigation from '@/components/navigation'
+import { wordList } from '@/components/WordsList'
+import Question from '@/components/Question'
+import Progression from '@/components/ProgressBar'
+import Navigation from '@/components/Navigation'
 import { useState, useEffect } from 'react'
-import WordToBox from '@/components/wordtobox'
-import AnswerToBox from '@/components/answertobox'
-import Modal from '@/components/wordmodal'
-import MessageModal from '@/components/messagemodal'
-import HelpBar from '@/components/helpbar'
-import ScrambledToBox from '@/components/scrambletobox'
+import WordToBox from '@/components/WordToBox'
+import AnswerToBox from '@/components/AnswerToBox'
+import Modal from '@/components/WordModal'
+import MessageModal from '@/components/MessageModal'
+import HelpBar from '@/components/HelpBar'
+import ScrambledToBox from '@/components/ScrambledToBox'
 
 export default function App() {
   /* DECLARE STATE */
@@ -212,6 +212,11 @@ export default function App() {
     } else {
       setSubmitted(true)
       setRevealedWord(originWord.split(''))
+      let checkCorrect = true
+      for (let i = 0; i < originWord.length; i++) {
+        if (chosenObject[i].value !== originWord[i]) checkCorrect = false
+      }
+      setIsAnswerCorrect(checkCorrect)
     }
   }
 
@@ -254,10 +259,6 @@ export default function App() {
     } else {
       setOpenMessage(true)
     }
-  }
-
-  const handleCheckWord = (value) => {
-    setIsAnswerCorrect(value)
   }
 
   const handleCloseModal = () => {
@@ -337,7 +338,7 @@ export default function App() {
               originWord={originWord}
               handleFunction={handleUnpick}
               isSubmitted={isSubmitted}
-              handleCheckWord={handleCheckWord}
+              isAnswerCorrect={isAnswerCorrect}
             />
           </div>
 
