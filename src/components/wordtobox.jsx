@@ -11,7 +11,7 @@ export default function WordToBox({
     .map((b) => b.value)
 
   return (
-    <div className='flex items-center justify-center'>
+    <div className='flex flex-wrap items-center justify-center'>
       {charArray.map((char, index) => (
         <button
           key={index}

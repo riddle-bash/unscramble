@@ -12,6 +12,9 @@ module.exports = {
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
+      boxShadow: {
+        bottom: '0 4px 3px 0 rgba(128, 128, 128, 0.4)', // Adjust blur radius for less blur
+      },
     },
   },
   plugins: [],

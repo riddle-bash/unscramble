@@ -1,6 +1,6 @@
 import { types } from './buttonstyle'
 
-export default function ObjectToBox({ objectArray, handleFunction }) {
+export default function ScrambledToBox({ objectArray, handleFunction }) {
   const insertStyle = (isPicked) => {
     if (!isPicked) {
       return types.filter((t) => t.name === 'gray').map((t) => t.value)

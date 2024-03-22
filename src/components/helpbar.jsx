@@ -15,6 +15,7 @@ export default function HelpBar({
       <div className='flex items-center border-r-2 pr-1'>
         {canUndo && (
           <button
+            title='Undo'
             disabled={isSubmitted}
             onClick={() => handleUndo()}
             className='bg-[#e3e3e3] hover:bg-gray-100 rounded-md p-1 mx-1'
@@ -37,7 +38,8 @@ export default function HelpBar({
         )}
         <p className='text-[#939393] mx-1 text-sm md:text-md'>Hints</p>
         <button
-          disabled={isSubmitted || hintLeft < 1}
+          title=''
+          disabled={true}
           onClick={handleHint}
           className='bg-[#e3e3e3] hover:bg-gray-100 rounded-md p-1 mx-1'
         >
@@ -57,11 +59,16 @@ export default function HelpBar({
           </svg>
         </button>
         {hintObject.map((hint, index) => (
-          <button key={index} disabled={true} className='mx-1'>
+          <button
+            key={index}
+            onClick={() => handleHint(index)}
+            disabled={isSubmitted || hintLeft < 1}
+            className='mx-1'
+          >
             {hint.isAvailable ? (
               <svg
                 xmlns='http://www.w3.org/2000/svg'
-                fill='#cbcbcb'
+                fill='#e24239'
                 viewBox='0 0 24 24'
                 strokeWidth='1.5'
                 stroke='none'
@@ -94,7 +101,10 @@ export default function HelpBar({
       </div>
 
       <div className='flex items-center m-1 ml-2'>
-        <button className='bg-[#e3e3e3] hover:bg-gray-100 rounded-md p-1 mx-1'>
+        <button
+          title='Show definition'
+          className='bg-[#e3e3e3] hover:bg-gray-100 rounded-md p-1 mx-1'
+        >
           <svg
             xmlns='http://www.w3.org/2000/svg'
             fill='white'
@@ -110,7 +120,10 @@ export default function HelpBar({
             />
           </svg>
         </button>
-        <button className='bg-[#e3e3e3] hover:bg-gray-100 rounded-md p-1 mx-1'>
+        <button
+          title='Speak'
+          className='bg-[#e3e3e3] hover:bg-gray-100 rounded-md p-1 mx-1'
+        >
           <svg
             xmlns='http://www.w3.org/2000/svg'
             fill='white'
